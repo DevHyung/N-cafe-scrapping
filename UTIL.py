@@ -47,7 +47,7 @@ def get_bs_by_txt(_FILENAME):
         return BeautifulSoup(f.read(),'lxml')
 
 cafeIdList = [585,586,392,418,590,591,592,242,126]
-titleList = ['임신준비 질문방', '테스터/초음파 질문방', '임신 중 질문방', '난임/인공/시험관 질문방', '분만 질문방', '산후조리 질문방', '산후다이어트 질문방', '수유 질문방', '육아 질문방']
+titleList = ['임신준비 질문방', '테스터,초음파 질문방', '임신 중 질문방', '난임,인공,시험관 질문방', '분만 질문방', '산후조리 질문방', '산후다이어트 질문방', '수유 질문방', '육아 질문방']
 linkList = [
     'https://cafe.naver.com/imsanbu/ArticleList.nhn?search.clubid=10094499&search.menuid=585&search.boardtype=L',
     'https://cafe.naver.com/imsanbu/ArticleList.nhn?search.clubid=10094499&search.menuid=586&search.boardtype=L',
@@ -62,7 +62,7 @@ linkList = [
 urlFormat = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid=10094499&search.searchdate={}{}&search.searchBy=0&search.query=&search.defaultValue=1&search.sortBy=date&userDisplay=50&search.media=0&search.option=0&search.menuid={}&search.page={}'
 iframeUrl = 'https://cafe.naver.com/iframe_url=/imsanbu'
 
-FILENAME = '{}.xlsx'
+FILENAME = '{}_{}.xlsx'
 HEADER = ['글번호', '작성일', '작성자', '제목', '내용', '답글1', '답글2', '답글3', '답글4', '답글5']
 if __name__ =="__main__":
     bs4 = get_bs_by_txt('html.txt')
