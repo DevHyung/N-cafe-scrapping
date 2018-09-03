@@ -45,6 +45,18 @@ def get_board_list():
                 linkList.append('https://cafe.naver.com/imsanbu' + li.a['href'])
             idx +=1
     return titleList,linkList
+def switch_cafe_main():
+    isChange = False
+    while not isChange:
+        iframes = driver.find_elements_by_tag_name('iframe')
+        for iframe in iframes:
+            if iframe.get_attribute('id') == 'cafe_main':
+                driver.switch_to.frame(iframe)
+                isChange = True
+                break
+        time.sleep(0.5)
+        print('e','Cafe_main 못찾음')
+
 
 def get_url():
     f = open("{}_{}~{}.txt".format(titleList[inputNum],startDate,endDate).replace('-',''),'w')
@@ -57,13 +69,7 @@ def get_url():
             url = urlFormat.format(startDate, endDate, cafeIdList[inputNum], pageIdx)
             driver.get(url)
             time.sleep(3)
-
-            iframes = driver.find_elements_by_tag_name('iframe')
-            for iframe in iframes:
-                if iframe.get_attribute('id') == 'cafe_main':
-                    driver.switch_to.frame(iframe)
-                    break
-
+            switch_cafe_main()
             bs4 = BeautifulSoup(driver.page_source, 'lxml')
             trs = bs4.find('div', class_='article-board m-tcol-c').find_all('tr', align='center')
             for tr in trs:
@@ -75,10 +81,51 @@ def get_url():
             time.sleep(random.randint(4, 8))
             pageIdx += 1
         except:  # 없으면 터짐
+            driver.switch_to.default_content()
             break
     log('s',"{} 개 수집완료".format(cnt))
     f.close()
 
+def get_parsing():
+    log('i','파싱 시작 ')
+    f = open("{}_{}~{}.txt".format(titleList[inputNum], startDate, endDate).replace('-', ''), 'r')
+    lines = f.readlines()
+    f.close()
+    log('i',"{}개의 URL 존재".format(len(lines)))
+    urlIndex = 1
+    for url in lines:
+        driver.get(url)
+        while True:
+            try:
+                driver.find_element_by_xpath('//*[@id="topLayerQueryInput"]').send_keys('1')
+                break
+            except:
+                time.sleep(0.5)
+        switch_cafe_main()
+        bs4 = BeautifulSoup(driver.page_source, 'lxml')
+        driver.switch_to.default_content()
+        id = bs4.find('a', id='linkUrl').get_text().strip().split('/')[-1]
+        datetime = bs4.find('td', class_='m-tcol-c date').get_text().strip()
+        author = bs4.find("div", class_='etc-box').find('td', class_='p-nick').a.get_text().strip()
+        title = bs4.find('div', class_='tit-box').find('span', class_='b m-tcol-c').get_text().strip()
+        contentDiv = bs4.find('div', id='tbody')
+        # try:
+        #     contentDiv.find('div', class_='NHN_Writeform_Main').decompose()
+        # except:
+        #     pass
+        content = contentDiv.get_text().strip()
+        commentList = ['', '', '', '', '']
+        commentCnt = 0
+        lis = bs4.find('ul', id='cmt_list').find_all('li', class_='')[:5]
+        for li in lis:
+            commentList[commentCnt] = li.find('span', class_='comm_body').get_text().strip()
+            commentCnt += 1
+        data = [id, datetime, author, title, content, commentList[0], commentList[1], commentList[2], commentList[3],
+                commentList[4]]
+        save_excel(FILENAME.format(titleList[inputNum],datetime[:7]), data, HEADER)
+        log('s',"{} / {} 개 완료 ...".format(urlIndex,len(lines)))
+        urlIndex += 1
+        time.sleep(random.randint(3,7))
 
 if __name__ == '__main__':
 
@@ -90,7 +137,7 @@ if __name__ == '__main__':
     startDate = input(">>> 시작날짜 입력 (YYYY-MM-DD 형식) : ")
     endDate = input(">>> 종료날짜 입력 (YYYY-MM-DD 형식) : ")
 
-
+    menu = input(">>> 내용파싱만 0 , URL부터 수집은 1 :")
 
     # driver init
     driver = webdriver.Chrome('./chromedriver')
@@ -98,8 +145,10 @@ if __name__ == '__main__':
     driver.maximize_window()
 
     #Url parsing
-    get_url()
-
+    if menu == '1':
+        get_url()
+    #Content Parsing
+    get_parsing()
     # ~()
     driver.quit()
 
