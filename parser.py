@@ -30,32 +30,42 @@
 from UTIL import * # Publish
 import time
 
-def get_board_dict():
-    """
-    target = [24,25,26,27,29,30,31,33,37]
-    :return:
-    """
-    boardDict = {} # for return
+
+
+def get_board_list():
+    titleList = []
+    linkList = []
     bs4 = get_bs_by_txt('html.txt')
     uls = bs4.find_all('ul', class_='cafe-menu-list')
     idx = 1
     for ul in uls:
         lis = ul.find_all('li')
         for li in lis:
-            if idx in [24,25,26,27,29,30,31,33,37]:
-                print("{}:{}".format(idx,li.a.get_text().strip()))
-                boardDict[idx] = 'https://cafe.naver.com/imsanbu/' + li.a['href']
+            if idx in [25,26,27,28,30,31,32,34,38]:
+                titleList.append(li.a.get_text().strip())
+                linkList.append('https://cafe.naver.com/imsanbu' + li.a['href'])
             idx +=1
-    return boardDict
+    return titleList,linkList
+
 if __name__ == '__main__':
-    boardDict = get_board_dict()
-    print(boardDict)
-    # 이다음부턴 검색기능 잘되있던데
-    # 검색은 사람이 하게 하고 다되면
-    # 그이후만 사람이 하는건어떠냐 
-    exit(-1)
+
+    '''ㅡㅡㅡㅡㅡ INPUT ㅡㅡㅡㅡㅡ'''
+    for idx in range(len(linkList)):
+        print(" {} : {} ".format(idx,titleList[idx]))
+
+    inputNum = int ( input(">>> 번호 입력 : ") )
+    startDate = input(">>> 시작날짜 입력 (YYYY-MM-DD 형식) : ")
+    endDate = input(">>> 종료날짜 입력 (YYYY-MM-DD 형식) : ")
+    url = urlFormat.format(startDate,endDate,cafeIdList[inputNum])
+
+
+    # Parsing
     driver = webdriver.Chrome('./chromedriver')
-    driver.get('https://cafe.naver.com/imsanbu')
+    driver.get('https://nid.naver.com/nidlogin.login')
+    driver.maximize_window()
+    doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
+    driver.get(url)
+    print(url)
 
 
     time.sleep(5)
