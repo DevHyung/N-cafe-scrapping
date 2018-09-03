@@ -2,4 +2,4 @@
 *.txt
 CONFIG.py
 *.exe
-
+chromedriver
