@@ -47,6 +47,7 @@ def get_board_list():
     return titleList,linkList
 def switch_cafe_main():
     isChange = False
+    time.sleep(1)
     while not isChange:
         iframes = driver.find_elements_by_tag_name('iframe')
         for iframe in iframes:
@@ -55,12 +56,10 @@ def switch_cafe_main():
                 isChange = True
                 break
         time.sleep(0.5)
-        print('e','Cafe_main 못찾음')
 
 
 def get_url():
     f = open("{}_{}~{}.txt".format(titleList[inputNum],startDate,endDate).replace('-',''),'w')
-    doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
     pageIdx = 1
     cnt = 0
     while True:
@@ -68,17 +67,14 @@ def get_url():
             log('i',"{} page url extract...".format(pageIdx))
             url = urlFormat.format(startDate, endDate, cafeIdList[inputNum], pageIdx)
             driver.get(url)
-            time.sleep(3)
+            time.sleep(random.randint(urlMin, urlMax))
             switch_cafe_main()
             bs4 = BeautifulSoup(driver.page_source, 'lxml')
             trs = bs4.find('div', class_='article-board m-tcol-c').find_all('tr', align='center')
             for tr in trs:
                 cnt += 1
                 f.write(iframeUrl + tr.a['href']+'\n')
-
-
             driver.switch_to.default_content()
-            time.sleep(random.randint(4, 8))
             pageIdx += 1
         except:  # 없으면 터짐
             driver.switch_to.default_content()
@@ -95,15 +91,11 @@ def get_parsing():
     urlIndex = 1
     for url in lines:
         driver.get(url)
-        while True:
-            try:
-                driver.find_element_by_xpath('//*[@id="topLayerQueryInput"]').send_keys('1')
-                break
-            except:
-                time.sleep(0.5)
+        time.sleep(random.randint(parsingMin, parsingMax))
         switch_cafe_main()
         bs4 = BeautifulSoup(driver.page_source, 'lxml')
         driver.switch_to.default_content()
+
         id = bs4.find('a', id='linkUrl').get_text().strip().split('/')[-1]
         datetime = bs4.find('td', class_='m-tcol-c date').get_text().strip()
         author = bs4.find("div", class_='etc-box').find('td', class_='p-nick').a.get_text().strip()
@@ -125,7 +117,7 @@ def get_parsing():
         save_excel(FILENAME.format(titleList[inputNum],datetime[:7]), data, HEADER)
         log('s',"{} / {} 개 완료 ...".format(urlIndex,len(lines)))
         urlIndex += 1
-        time.sleep(random.randint(3,7))
+
 
 if __name__ == '__main__':
 
@@ -136,21 +128,37 @@ if __name__ == '__main__':
     inputNum = int ( input(">>> 번호 입력 : ") )
     startDate = input(">>> 시작날짜 입력 (YYYY-MM-DD 형식) : ")
     endDate = input(">>> 종료날짜 입력 (YYYY-MM-DD 형식) : ")
-
-    menu = input(">>> 내용파싱만 0 , URL부터 수집은 1 :")
+    menu = input(">>> URL 파싱만 0 , 내용파싱만 1, 처음시작은 2 :")
 
     # driver init
     driver = webdriver.Chrome('./chromedriver')
     driver.get('https://nid.naver.com/nidlogin.login')
     driver.maximize_window()
-
+    doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
     #Url parsing
-    if menu == '1':
+    if menu == '0':
+        urlMin = int(input(">>> URL 파싱간 딜레이 최소값 정수 입력: "))
+        urlMax = int(input(">>> URL 파싱간 딜레이 최대값 정수 입력: "))
+        parsingMin = 3
+        parsingMax = 7
         get_url()
     #Content Parsing
-    get_parsing()
+    elif menu == '1':
+        urlMin = 3
+        urlMax = 7
+        parsingMin = int(input(">>> 데이터 파싱간 딜레이 최소값 정수 입력: "))
+        parsingMax = int(input(">>> 데이터 파싱간 딜레이 최대값 정수 입력: "))
+        get_parsing()
+    else:
+        urlMin = int(input(">>> URL 파싱간 딜레이 최소값 정수 입력: "))
+        urlMax = int(input(">>> URL 파싱간 딜레이 최대값 정수 입력: "))
+        parsingMin = int(input(">>> 데이터 파싱간 딜레이 최소값 정수 입력: "))
+        parsingMax = int(input(">>> 데이터 파싱간 딜레이 최대값 정수 입력: "))
+        get_url()
+        get_parsing()
     # ~()
     driver.quit()
+
 
 
 
