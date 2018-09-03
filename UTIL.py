@@ -19,8 +19,7 @@ def save_excel(_FILENAME, _DATA, _HEADER):
             return None
         book = load_workbook(_FILENAME)
         sheet = book.active
-        for depth1List in _DATA:
-            sheet.append(depth1List)
+        sheet.append(_DATA)
         book.save(_FILENAME)
     else:  # 새로만드는건
         if _HEADER == None:
@@ -30,12 +29,17 @@ def save_excel(_FILENAME, _DATA, _HEADER):
         sheet = book.active
         sheet.title = '시트이름'
         sheet.append(_HEADER)
-        sheet.column_dimensions['A'].width = 20
-        sheet.column_dimensions['B'].width = 20
+        sheet.column_dimensions['A'].width = 10
+        sheet.column_dimensions['B'].width = 15
         sheet.column_dimensions['C'].width = 20
-        sheet.column_dimensions['D'].width = 20
-        sheet.column_dimensions['E'].width = 20
-        sheet.column_dimensions['F'].width = 40
+        sheet.column_dimensions['D'].width = 30
+        sheet.column_dimensions['E'].width = 50
+        sheet.column_dimensions['F'].width = 20
+        sheet.column_dimensions['G'].width = 20
+        sheet.column_dimensions['H'].width = 20
+        sheet.column_dimensions['I'].width = 20
+        sheet.column_dimensions['J'].width = 20
+        sheet.append(_DATA)
         book.save(_FILENAME)
 
 def get_bs_by_txt(_FILENAME):
@@ -58,9 +62,8 @@ linkList = [
 urlFormat = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid=10094499&search.searchdate={}{}&search.searchBy=0&search.query=&search.defaultValue=1&search.sortBy=date&userDisplay=50&search.media=0&search.option=0&search.menuid={}&search.page={}'
 iframeUrl = 'https://cafe.naver.com/iframe_url=/imsanbu'
 
-FILENAME = 'result.xlsx'
+FILENAME = '{}.xlsx'
 HEADER = ['글번호', '작성일', '작성자', '제목', '내용', '답글1', '답글2', '답글3', '답글4', '답글5']
-save_excel(FILENAME,None,HEADER)
 if __name__ =="__main__":
     bs4 = get_bs_by_txt('html.txt')
     id = bs4.find('a',id='linkUrl').get_text().strip().split('/')[-1]
@@ -68,7 +71,10 @@ if __name__ =="__main__":
     author = bs4.find("div",class_='etc-box').find('td',class_='p-nick').a.get_text().strip()
     title = bs4.find('div',class_='tit-box').find('span',class_='b m-tcol-c').get_text().strip()
     contentDiv = bs4.find('div',id='tbody')
-    contentDiv.find('div',class_='NHN_Writeform_Main').decompose()
+    try:
+        contentDiv.find('div',class_='NHN_Writeform_Main').decompose()
+    except:
+        pass
     content = contentDiv.get_text().strip()
     commentList = ['','','','','']
     commentCnt = 0
@@ -76,6 +82,7 @@ if __name__ =="__main__":
     for li in lis:
         commentList[commentCnt] = li.find('span',class_='comm_body').get_text().strip()
         commentCnt+=1
-    print(id,datetime,author,title)
-    print(content)
-    print(commentList)
+    data= [id, datetime, author, title, content, commentList[0], commentList[1], commentList[2], commentList[3],commentList[4]]
+    print(data)
+    save_excel(FILENAME.format(datetime[:7]),data,HEADER)
+
