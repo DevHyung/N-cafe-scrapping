@@ -26,10 +26,34 @@
 # 근데 그중에 페이지 설정도 하고싶고
 # 작성일 기준으로 엑셀파일 제목을정하고
 # 그아래 또 게시판별 엑셀을 따로 저장해야겠군
-from CONFIG import *
+# from CONFIG import * # 개인개발용
+from UTIL import * # Publish
 import time
 
+def get_board_dict():
+    """
+    target = [24,25,26,27,29,30,31,33,37]
+    :return:
+    """
+    boardDict = {} # for return
+    bs4 = get_bs_by_txt('html.txt')
+    uls = bs4.find_all('ul', class_='cafe-menu-list')
+    idx = 1
+    for ul in uls:
+        lis = ul.find_all('li')
+        for li in lis:
+            if idx in [24,25,26,27,29,30,31,33,37]:
+                print("{}:{}".format(idx,li.a.get_text().strip()))
+                boardDict[idx] = 'https://cafe.naver.com/imsanbu/' + li.a['href']
+            idx +=1
+    return boardDict
 if __name__ == '__main__':
+    boardDict = get_board_dict()
+    print(boardDict)
+    # 이다음부턴 검색기능 잘되있던데
+    # 검색은 사람이 하게 하고 다되면
+    # 그이후만 사람이 하는건어떠냐 
+    exit(-1)
     driver = webdriver.Chrome('./chromedriver')
     driver.get('https://cafe.naver.com/imsanbu')
 
