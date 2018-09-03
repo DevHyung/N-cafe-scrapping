@@ -47,7 +47,7 @@ def get_board_list():
     return titleList,linkList
 
 def get_url():
-    f = open("{}~{}.txt".format(startDate,endDate).replace('-',''),'w')
+    f = open("{}_{}~{}.txt".format(titleList[inputNum],startDate,endDate).replace('-',''),'w')
     doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
     pageIdx = 1
     cnt = 0
