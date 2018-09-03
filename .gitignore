@@ -3,3 +3,5 @@
 CONFIG.py
 *.exe
 chromedriver
+__*
+*.xlsx
