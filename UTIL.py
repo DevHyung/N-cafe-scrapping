@@ -57,13 +57,25 @@ linkList = [
     ]
 urlFormat = 'https://cafe.naver.com/ArticleSearchList.nhn?search.clubid=10094499&search.searchdate={}{}&search.searchBy=0&search.query=&search.defaultValue=1&search.sortBy=date&userDisplay=50&search.media=0&search.option=0&search.menuid={}&search.page={}'
 iframeUrl = 'https://cafe.naver.com/iframe_url=/imsanbu'
-if __name__ =="__main__":
-    FILENAME = 'result.xlsx'
-    HEADER = ['글번호', '작성일', '작성자', '제목', '내용', '답글1', '답글2', '답글3', '답글4', '답글5']
-    save_excel(FILENAME,None,HEADER)
 
+FILENAME = 'result.xlsx'
+HEADER = ['글번호', '작성일', '작성자', '제목', '내용', '답글1', '답글2', '답글3', '답글4', '답글5']
+save_excel(FILENAME,None,HEADER)
+if __name__ =="__main__":
     bs4 = get_bs_by_txt('html.txt')
-    trs = bs4.find('div',class_='article-board m-tcol-c').find_all('tr',align='center')
-    for tr in trs:
-        print(iframeUrl+tr.a['href'],tr.a.get_text().strip())
-    #print(bs4.prettify())
+    id = bs4.find('a',id='linkUrl').get_text().strip().split('/')[-1]
+    datetime = bs4.find('td',class_='m-tcol-c date').get_text().strip()
+    author = bs4.find("div",class_='etc-box').find('td',class_='p-nick').a.get_text().strip()
+    title = bs4.find('div',class_='tit-box').find('span',class_='b m-tcol-c').get_text().strip()
+    contentDiv = bs4.find('div',id='tbody')
+    contentDiv.find('div',class_='NHN_Writeform_Main').decompose()
+    content = contentDiv.get_text().strip()
+    commentList = ['','','','','']
+    commentCnt = 0
+    lis = bs4.find('ul',id='cmt_list').find_all('li',class_='')[:5]
+    for li in lis:
+        commentList[commentCnt] = li.find('span',class_='comm_body').get_text().strip()
+        commentCnt+=1
+    print(id,datetime,author,title)
+    print(content)
+    print(commentList)
