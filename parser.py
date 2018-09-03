@@ -29,8 +29,7 @@
 # from CONFIG import * # 개인개발용
 from UTIL import * # Publish
 import time
-
-
+import random
 
 def get_board_list():
     titleList = []
@@ -47,6 +46,44 @@ def get_board_list():
             idx +=1
     return titleList,linkList
 
+def get_url():
+    f = open("{}~{}.txt".format(startDate,endDate).replace('-',''),'w')
+
+    driver = webdriver.Chrome('./chromedriver')
+    driver.get('https://nid.naver.com/nidlogin.login')
+    driver.maximize_window()
+    doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
+    pageIdx = 1
+    cnt = 0
+    while True:
+        try:
+            log('i',"{} page url extract...".format(pageIdx))
+            url = urlFormat.format(startDate, endDate, cafeIdList[inputNum], pageIdx)
+            driver.get(url)
+            time.sleep(3)
+
+            iframes = driver.find_elements_by_tag_name('iframe')
+            for iframe in iframes:
+                if iframe.get_attribute('id') == 'cafe_main':
+                    driver.switch_to.frame(iframe)
+                    break
+
+            bs4 = BeautifulSoup(driver.page_source, 'lxml')
+            trs = bs4.find('div', class_='article-board m-tcol-c').find_all('tr', align='center')
+            for tr in trs:
+                cnt += 1
+                f.write(iframeUrl + tr.a['href']+'\n')
+
+
+            driver.switch_to.default_content()
+            time.sleep(random.randint(4, 8))
+            pageIdx += 1
+        except:  # 없으면 터짐
+            break
+    log('s',"{} 개 수집완료".format(cnt))
+    f.close()
+    driver.quit()
+
 if __name__ == '__main__':
 
     '''ㅡㅡㅡㅡㅡ INPUT ㅡㅡㅡㅡㅡ'''
@@ -56,17 +93,10 @@ if __name__ == '__main__':
     inputNum = int ( input(">>> 번호 입력 : ") )
     startDate = input(">>> 시작날짜 입력 (YYYY-MM-DD 형식) : ")
     endDate = input(">>> 종료날짜 입력 (YYYY-MM-DD 형식) : ")
-    url = urlFormat.format(startDate,endDate,cafeIdList[inputNum])
+
 
 
     # Parsing
-    driver = webdriver.Chrome('./chromedriver')
-    driver.get('https://nid.naver.com/nidlogin.login')
-    driver.maximize_window()
-    doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
-    driver.get(url)
-    print(url)
+    get_url()
 
 
-    time.sleep(5)
-    driver.quit()
