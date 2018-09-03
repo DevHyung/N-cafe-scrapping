@@ -48,10 +48,6 @@ def get_board_list():
 
 def get_url():
     f = open("{}~{}.txt".format(startDate,endDate).replace('-',''),'w')
-
-    driver = webdriver.Chrome('./chromedriver')
-    driver.get('https://nid.naver.com/nidlogin.login')
-    driver.maximize_window()
     doLogin = input(">>> 로그인 후에 엔터를 눌러주세요 : ")
     pageIdx = 1
     cnt = 0
@@ -82,7 +78,7 @@ def get_url():
             break
     log('s',"{} 개 수집완료".format(cnt))
     f.close()
-    driver.quit()
+
 
 if __name__ == '__main__':
 
@@ -96,7 +92,16 @@ if __name__ == '__main__':
 
 
 
-    # Parsing
+    # driver init
+    driver = webdriver.Chrome('./chromedriver')
+    driver.get('https://nid.naver.com/nidlogin.login')
+    driver.maximize_window()
+
+    #Url parsing
     get_url()
+
+    # ~()
+    driver.quit()
+
 
 
