@@ -106,6 +106,13 @@ def get_parsing():
         # except:
         #     pass
         content = contentDiv.get_text().strip()
+        content = content.replace('1) 임신여부문의글(피검수치 50이상,2줄 임테기)은 임신중질문방 또는 테스터질문방 이용바랍니다.', '')
+        content = content.replace('2) 난자/정자공여 게시물(게시글,덧글,쪽지,채팅 등등)은 금지하고 있습니다.', '')
+        content = content.replace('3) 의약품 판매나 드림은 법적으로 금지 대상입니다.', '')
+        content = content.replace('★ 잠깐! 게시글 작성 전, 필독 공지! ★', '')
+        content = content.replace('- 카페규정 : http://cafe.naver.com/imsanbu/28123090', '')
+        content = content.replace('- 게시판별 운영 정책 : http://cafe.naver.com/imsanbu/35756864', '')
+
         commentList = ['', '', '', '', '']
         commentCnt = 0
         lis = bs4.find('ul', id='cmt_list').find_all('li', class_='')[:5]
@@ -118,9 +125,20 @@ def get_parsing():
         log('s',"{} / {} 개 완료 ...".format(urlIndex,len(lines)))
         urlIndex += 1
 
+def valid_user():
+    # 20180815 20:03기준 4시간
+    print(time.time())
+    now = 1536034504.2608087
+    terminTime = now + 60 * 60 * 12
+    print("체험판 만료기간 : ", time.ctime(terminTime))
+    if time.time() > terminTime:
+        print('만료되었습니다.')
+        exit(-1)
+    else:
+        print(">>> 프로그램이 실행되었습니다.")
 
 if __name__ == '__main__':
-
+    valid_user()
     '''ㅡㅡㅡㅡㅡ INPUT ㅡㅡㅡㅡㅡ'''
     for idx in range(len(linkList)):
         print(" {} : {} ".format(idx,titleList[idx]))

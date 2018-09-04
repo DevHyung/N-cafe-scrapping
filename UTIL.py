@@ -71,11 +71,19 @@ if __name__ =="__main__":
     author = bs4.find("div",class_='etc-box').find('td',class_='p-nick').a.get_text().strip()
     title = bs4.find('div',class_='tit-box').find('span',class_='b m-tcol-c').get_text().strip()
     contentDiv = bs4.find('div',id='tbody')
-    try:
-        contentDiv.find('div',class_='NHN_Writeform_Main').decompose()
-    except:
-        pass
+    #try:
+        #contentDiv.find('div',class_='NHN_Writeform_Main').decompose()
+    #except:
+        #pass
     content = contentDiv.get_text().strip()
+    content = content.replace('1) 임신여부문의글(피검수치 50이상,2줄 임테기)은 임신중질문방 또는 테스터질문방 이용바랍니다.','')
+    content = content.replace('2) 난자/정자공여 게시물(게시글,덧글,쪽지,채팅 등등)은 금지하고 있습니다.', '')
+    content = content.replace('3) 의약품 판매나 드림은 법적으로 금지 대상입니다.', '')
+    content = content.replace('★ 잠깐! 게시글 작성 전, 필독 공지! ★', '')
+    content = content.replace('- 카페규정 : http://cafe.naver.com/imsanbu/28123090', '')
+    content = content.replace('- 게시판별 운영 정책 : http://cafe.naver.com/imsanbu/35756864', '')
+
+
     commentList = ['','','','','']
     commentCnt = 0
     lis = bs4.find('ul',id='cmt_list').find_all('li',class_='')[:5]
@@ -83,6 +91,7 @@ if __name__ =="__main__":
         commentList[commentCnt] = li.find('span',class_='comm_body').get_text().strip()
         commentCnt+=1
     data= [id, datetime, author, title, content, commentList[0], commentList[1], commentList[2], commentList[3],commentList[4]]
-    print(data)
-    save_excel(FILENAME.format(datetime[:7]),data,HEADER)
+    print(content)
+    #print(data)
+    #save_excel(FILENAME.format(datetime[:7]),data,HEADER)
 
