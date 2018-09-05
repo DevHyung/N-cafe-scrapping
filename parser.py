@@ -110,7 +110,7 @@ def valid_user():
         print(">>> 프로그램이 실행되었습니다.")
 
 if __name__ == '__main__':
-    valid_user()
+    #valid_user()
     """
     @ 사용법
     1. 프로그램이 시작되면 카페 게시판 목록이 뜨고 파싱하려는 
