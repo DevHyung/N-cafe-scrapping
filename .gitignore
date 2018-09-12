@@ -5,3 +5,5 @@ CONFIG.py
 chromedriver
 __*
 *.xlsx
+build/
+dist/
