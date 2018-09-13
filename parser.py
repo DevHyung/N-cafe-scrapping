@@ -32,25 +32,25 @@ def switch_cafe_main():
 
 def get_url():
     f = open("{}_{}~{}.txt".format(titleList[inputNum],startDate,endDate).replace('-',''),'w')
-    pageIdx = 1
+    pageIdx = urlStart
     cnt = 0
     while True:
-        try:
-            log('i',"{} page url extract...".format(pageIdx))
-            url = urlFormat.format(startDate, endDate, cafeIdList[inputNum], pageIdx)
-            driver.get(url)
-            time.sleep(random.randint(urlMin, urlMax))
-            switch_cafe_main()
-            bs4 = BeautifulSoup(driver.page_source, 'lxml')
-            trs = bs4.find('div', class_='article-board m-tcol-c').find_all('tr', align='center')
-            for tr in trs:
-                cnt += 1
-                f.write(iframeUrl + tr.a['href']+'\n')
-            driver.switch_to.default_content()
-            pageIdx += 1
-        except:  # 없으면 터짐
-            driver.switch_to.default_content()
-            break
+        #try:
+        log('i',"{} page url extract...".format(pageIdx))
+        url = urlFormat.format(startDate, endDate, cafeIdList[inputNum], pageIdx)
+        driver.get(url)
+        time.sleep(random.randint(urlMin, urlMax))
+        switch_cafe_main()
+        bs4 = BeautifulSoup(driver.page_source, 'lxml')
+        trs = bs4.find('div', class_='article-board m-tcol-c').find_all('tr', align='center')
+        for tr in trs:
+            cnt += 1
+            f.write(iframeUrl + tr.a['href']+'\n')
+        driver.switch_to.default_content()
+        pageIdx += 1
+        # except:  # 없으면 터짐
+        #     driver.switch_to.default_content()
+        #     break
     log('s',"{} 개 수집완료".format(cnt))
     f.close()
 
@@ -153,6 +153,7 @@ if __name__ == '__main__':
     if menu == '0':
         urlMin = int(input(">>> URL 파싱간 딜레이 최소값 정수 입력: "))
         urlMax = int(input(">>> URL 파싱간 딜레이 최대값 정수 입력: "))
+        urlStart = int(input(">>> URL 파싱 시작 페이지 입력 (기본값 1 ):"))
         parsingMin = 3
         parsingMax = 7
         get_url()
@@ -160,12 +161,14 @@ if __name__ == '__main__':
     elif menu == '1':
         urlMin = 3
         urlMax = 7
+        urlStart = 1
         parsingMin = int(input(">>> 데이터 파싱간 딜레이 최소값 정수 입력: "))
         parsingMax = int(input(">>> 데이터 파싱간 딜레이 최대값 정수 입력: "))
         get_parsing()
     else:
         urlMin = int(input(">>> URL 파싱간 딜레이 최소값 정수 입력: "))
         urlMax = int(input(">>> URL 파싱간 딜레이 최대값 정수 입력: "))
+        urlStart = int(input(">>> URL 파싱 시작 페이지 입력 (기본값 1 ):"))
         parsingMin = int(input(">>> 데이터 파싱간 딜레이 최소값 정수 입력: "))
         parsingMax = int(input(">>> 데이터 파싱간 딜레이 최대값 정수 입력: "))
         get_url()
