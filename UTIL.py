@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.alert import Alert
 from openpyxl import load_workbook,Workbook
 import os
 def log(tag, text):
