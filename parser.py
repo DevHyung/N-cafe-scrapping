@@ -97,17 +97,6 @@ def get_parsing():
         log('s',"{} / {} 개 완료 ...".format(urlIndex,len(lines)))
         urlIndex += 1
 
-def valid_user():
-    # 20180815 20:03기준 4시간
-    print(time.time())
-    now = 1536034504.2608087
-    terminTime = now + 60 * 60 * 30
-    print("체험판 만료기간 : ", time.ctime(terminTime))
-    if time.time() > terminTime:
-        print('만료되었습니다.')
-        exit(-1)
-    else:
-        print(">>> 프로그램이 실행되었습니다.")
 
 if __name__ == '__main__':
     #valid_user()
